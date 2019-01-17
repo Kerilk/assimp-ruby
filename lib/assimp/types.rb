@@ -28,7 +28,7 @@ module Assimp
 
   Origin = enum( :origin, [ :SET, :CUR, :END ] )
 
-  DefaultLogStream = bitmask( :default_log_screen, [
+  DefaultLogStream = bitmask( :default_log_stream, [
     :FILE,
     :STDOUT,
     :STDERR,

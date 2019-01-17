@@ -98,7 +98,7 @@ module Assimp
       ptr = FFI::MemoryPointer::new(:pointer)
       res = Assimp::get_material_property(self, key, type, index, ptr)
       raise "get_material_property error!" unless res == :SUCCESS
-      new_ptr = ptr.read_ptr
+      new_ptr = ptr.read_pointer
       return nil if new_ptr.null?
       MaterialProperty::new(new_ptr) 
     end

@@ -22,6 +22,11 @@ module Assimp
     MAXLEN = 1024
     layout :length, :size_t,
            :data, [:char, MAXLEN]
+
+    def to_s
+      self[:data].to_a[0...self[:length]].pack("U*")
+    end
+
   end
 
   Return = enum( :return, [ :SUCCESS, :FAILURE, -1, :OUTOFMEMORY, -3 ] )

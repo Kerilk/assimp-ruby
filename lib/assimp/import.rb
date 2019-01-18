@@ -3,12 +3,16 @@ module Assimp
   callback :log_stream_callback, [:string, :string], :void
 
   class LogStream < FFI::Struct
+    extend StructAccessors
     layout :callback, :log_stream_callback,
            :user, :pointer
+    struct_attr_reader :callback, :user
   end
 
   class PropertyStore < FFI::Struct
+    extend StructAccessors
     layout :sentinel, :char
+    struct_attr_reader :sentinel
   end
 
   typedef :int, :bool

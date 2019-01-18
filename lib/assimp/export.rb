@@ -1,9 +1,13 @@
 module Assimp
 
   class ExportFormatDesc < FFI::Struct
+    extend StructAccessors
     layout :id, :string,
            :description, :string,
            :file_extension, :string
+    struct_attr_reader :id,
+                       :description,
+                       :file_extension
   end
 
   attach_function :get_export_format_count, :aiGetExportFormatCount, [], :size_t
@@ -15,10 +19,20 @@ module Assimp
   attach_function :export_scene_ex, :aiExportSceneEx, [Scene.ptr, :string, :string, FileIO.ptr, PostProcessSteps], Return
 
   class ExportDataBlob < FFI::Struct
+    extend StructAccessors
     layout :size, :size_t,
            :data, :pointer,
            :name, String,
            :next, ExportDataBlob.ptr
+    struct_attr_reader :size,
+                       :data,
+                       :name,
+                       :next
+    
+    def to_s
+      name.to_s
+    end
+
   end
 
   attach_function :export_scene_to_blob, :aiExportSceneToBlob, [Scene.ptr, :string, PostProcessSteps], ExportDataBlob.ptr

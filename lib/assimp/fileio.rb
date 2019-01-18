@@ -18,12 +18,17 @@ module Assimp
   typedef :pointer, :user_data #byte
 
   class FileIO
+    extend StructAccessors
     layout :open_proc, :file_open_proc,
            :close_proc, :file_close_proc,
            :user_data, :user_data
+    struct_attr_reader :open_proc,
+                       :close_proc,
+                       :user_data
   end
 
   class File
+    extend StructAccessors
     layout :read_proc, :file_read_proc,
            :write_proc, :file_write_proc,
            :tell_proc, :file_tell_proc,
@@ -31,6 +36,13 @@ module Assimp
            :seek_proc, :file_seek,
            :flush_proc, :file_flush_proc,
            :user_data, :user_data
+    struct_attr_reader :read_proc,
+                       :write_proc,
+                       :tell_proc,
+                       :file_size_proc,
+                       :seek_proc,
+                       :flush_proc,
+                       :user_data
   end
 
 end

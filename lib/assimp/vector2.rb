@@ -1,8 +1,14 @@
 module Assimp
 
   class Vector2D < FFI::Struct
+    extend StructAccessors
     layout :x, :ai_real,
            :y, :ai_real
-  end
+    struct_attr_reader :x, :y
+
+    def to_s
+      "<#{x}, #{y}>"
+    end
+   end
 
 end

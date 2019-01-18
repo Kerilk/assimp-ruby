@@ -10,6 +10,7 @@ module Assimp
   ])
 
   class Light < FFI::Struct
+    extend StructAccessors
     layout :name, String,
            :type, LightSourceType,
            :position, Vector3D,
@@ -24,6 +25,25 @@ module Assimp
            :angle_inner_cone, :float,
            :angle_outer_cone, :float,
            :size, Vector2D
+    struct_attr_reader :name,
+                       :type,
+                       :position,
+                       :direction,
+                       :up,
+                       :attenuation_constant,
+                       :attenuation_linear,
+                       :attenuation_quadratic,
+                       :color_diffuse,
+                       :color_dspecular,
+                       :color_ambiant,
+                       :angle_inner_cone,
+                       :angle_outer_cone,
+                       :size
+
+    def to_s
+      name.to_s
+    end
+
   end
 
 end

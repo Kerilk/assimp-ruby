@@ -10,21 +10,16 @@ module Assimp
            :children, :pointer, #Node*[num_chidren]
            :num_meshes, :uint,
            :meshes, :pointer, #uint[num_meshes]
-           :meta_data, Metadata.ptr
+           :meta_data, :pointer #Metadata.ptr
 
     struct_attr_reader :name,
                        :transformation,
                        :num_children,
-                       :num_meshes,
-                       :meta_data
+                       :num_meshes
 
-    struct_array_attr_reader [:children, Node]
+    struct_ref_array_attr_reader [:children, Node]
 
-    def meshes
-      p = self[:meshes]
-      return [] if p.null? || num_meshes == 0
-      p.read_array_of_uint(num_meshes)
-    end
+    struct_array_attr_reader [:meshes, :uint]
 
     def parent
       ptr = self[:parent]
@@ -42,6 +37,12 @@ module Assimp
       else
         to_enum(:each_node)
       end
+    end
+
+    def meta_data
+      p = self[:meta_data]
+      return nil if p.null?
+      Metadata::new(p)
     end
 
   end
@@ -82,12 +83,12 @@ module Assimp
                        :num_lights,
                        :num_cameras
 
-    struct_array_attr_reader [:meshes, Mesh],
-                             [:materials, Material],
-                             [:animations, Animation],
-                             [:textures, Texture],
-                             [:lights, Light],
-                             [:cameras, Camera]
+    struct_ref_array_attr_reader [:meshes, Mesh],
+                                 [:materials, Material],
+                                 [:animations, Animation],
+                                 [:textures, Texture],
+                                 [:lights, Light],
+                                 [:cameras, Camera]
 
     def each_node(&block)
       if block then

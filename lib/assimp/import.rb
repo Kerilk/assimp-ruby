@@ -9,23 +9,33 @@ module Assimp
     struct_attr_reader :callback, :user
 
     def self.detach_all
-      Assimp::detach_all_log_streams
+      Assimp::aiDetachAllLogStreams
+      self
     end
 
     def self.debugger
-      Assimp::get_predefined_log_stream(:DEBUGGER, nil)
+      Assimp::aiGetPredefinedLogStream(:DEBUGGER, nil)
     end
 
     def self.file(path)
-      Assimp::get_predefined_log_stream(:FILE, path)
+      Assimp::aiGetPredefinedLogStream(:FILE, path)
     end
 
     def self.stdout
-      Assimp::get_predefined_log_stream(:STDOUT, nil)
+      Assimp::aiGetPredefinedLogStream(:STDOUT, nil)
     end
 
     def self.stderr
-      Assimp::get_predefined_log_stream(:STDERR, nil)
+      Assimp::aiGetPredefinedLogStream(:STDERR, nil)
+    end
+
+    def self.verbose(bool)
+      Assimp::aiEnableVerboseLogging(bool)
+      self
+    end
+
+    def self.error_string
+      Assimp::aiGetErrorString
     end
 
     def user=(mess)
@@ -38,7 +48,7 @@ module Assimp
         @block = FFI::Function.new(:void, [:string, :string], &block)
         self[:callback] = @block
       end
-      Assimp::attach_log_stream(self)
+      Assimp::aiAttachLogStream(self)
     end
 
     def callback=(c)
@@ -47,20 +57,33 @@ module Assimp
     end
 
     def detach
-      Assimp::detach_log_stream(self)
+      Assimp::aiDetachLogStream(self)
     end
 
   end
+
+  typedef :int, :bool
+
+  FALSE = 0
+  TRUE = 1
+
+  attach_function :aiApplyPostProcessing, [Scene.by_ref, PostProcessSteps], :pointer
+  attach_function :aiGetPredefinedLogStream, [DefaultLogStream, :string], LogStream.by_value
+  attach_function :aiAttachLogStream, [LogStream.by_ref], :void
+  attach_function :aiEnableVerboseLogging, [:bool], :void
+  attach_function :aiDetachLogStream, [LogStream.by_ref], Return
+  attach_function :aiDetachAllLogStreams, [], :void
+  attach_function :aiGetErrorString, [], :string
 
   class PropertyStore < FFI::ManagedStruct
     layout :dummy, :char
 
     def initialize
-      super(Assimp.create_property_store)
+      super(Assimp::aiCreatePropertyStore)
     end
 
     def self.release(ptr)
-      Assimp.release_property_store(ptr)
+      Assimp::aiReleasePropertyStore(ptr)
     end
 
     def self.config_setter(*args)
@@ -70,29 +93,29 @@ module Assimp
         if type == :bool
           define_method(meth_name) do |bool|
             raise "Invalid bool value #{bool.inspect}" unless bool == Assimp::TRUE || bool == Assimp::FALSE
-            Assimp.set_import_property_integer(self, prop, bool)
+            Assimp::aiSetImportPropertyInteger(self, prop, bool)
             bool
           end
         elsif type == :int
           define_method(meth_name) do |val|
-            Assimp.set_import_property_integer(self, prop, val)
+            Assimp::aiSetImportPropertyInteger(self, prop, val)
             val
           end
         elsif type == :float
           define_method(meth_name) do |val|
-            Assimp.set_import_property_float(self, prop, val)
+            Assimp::aiSetImportPropertyFloat(self, prop, val)
             val
           end
         elsif type == :matrix4x4
           define_method(meth_name) do |mat|
-            Assimp.set_import_property_matrix(self, prop, mat)
+            Assimp::aiSetImportPropertyMatrix(self, prop, mat)
             mat
           end
         elsif type == :string
           define_method(meth_name) do |str|
             s = String::new
             s.data = str
-            Assimp.set_import_property_string(self, prop, s)
+            Assimp::aiSetImportPropertyString(self, prop, s)
             str
           end
         elsif type == :string_array
@@ -100,7 +123,7 @@ module Assimp
             str = args.collect { |a| a =~ /\s/ ? "\'"+a+"\'" : a }.join(" ")
             s = String::new
             s.data = str
-            Assimp.set_import_property_string(self, prop, s)
+            Assimp::aiSetImportPropertyString(self, prop, s)
             args
           end
         end
@@ -131,46 +154,73 @@ module Assimp
 
   end
 
-  typedef :int, :bool
+  attach_function :aiCreatePropertyStore, [], :pointer
+  attach_function :aiReleasePropertyStore, [:pointer], :void
+  attach_function :aiSetImportPropertyInteger, [PropertyStore.by_ref, :string, :int], :void
+  attach_function :aiSetImportPropertyFloat, [PropertyStore.by_ref, :string, :ai_real], :void
+  attach_function :aiSetImportPropertyString, [PropertyStore.by_ref, :string, String.by_ref], :void
+  attach_function :aiSetImportPropertyMatrix, [PropertyStore.by_ref, :string, Matrix4x4.by_ref], :void
 
-  FALSE = 0
-  TRUE = 1
+  attach_function :aiImportFile, [:string, PostProcessSteps], Scene.by_ref
+  attach_function :aiImportFileEx, [:string, PostProcessSteps, FileIO.by_ref], Scene.by_ref
+  attach_function :aiImportFileExWithProperties, [:string, PostProcessSteps, FileIO.by_ref, PropertyStore.by_ref], Scene.by_ref
 
-  attach_function :import_file, :aiImportFile, [:string, PostProcessSteps], Scene.by_ref
-  attach_function :import_file_ex, :aiImportFileEx, [:string, PostProcessSteps, FileIO.by_ref], Scene.by_ref
-  attach_function :import_file_ex_with_properties, :aiImportFileExWithProperties, [:string, PostProcessSteps, FileIO.by_ref, PropertyStore.by_ref], Scene.by_ref
-  attach_function :import_file_from_memory, :aiImportFileFromMemory, [:pointer, :uint, :uint, :string], Scene.by_ref
-  attach_function :import_file_from_memory_with_properties, :aiImportFileFromMemoryWithProperties, [:pointer, :uint, :uint, :string, PropertyStore.by_ref], Scene.by_ref
-  attach_function :apply_post_processing, :aiApplyPostProcessing, [Scene.by_ref, PostProcessSteps], :pointer
-  attach_function :get_predefined_log_stream, :aiGetPredefinedLogStream, [DefaultLogStream, :string], LogStream.by_value
-  attach_function :attach_log_stream, :aiAttachLogStream, [LogStream.by_ref], :void
-  attach_function :enable_verbose_logging, :aiEnableVerboseLogging, [:bool], :void
-  attach_function :detach_log_stream, :aiDetachLogStream, [LogStream.by_ref], Return
-  attach_function :detach_all_log_streams, :aiDetachAllLogStreams, [], :void
-  attach_function :release_import, :aiReleaseImport, [Scene.by_ref], :void
-  attach_function :get_error_string, :aiGetErrorString, [], :string
-  alias error_string get_error_string
-  attach_function :is_extension_supported, :aiIsExtensionSupported, [:string], :bool
-  alias extension_supported? is_extension_supported
-  attach_function :get_extension_list, :aiGetExtensionList, [String.by_ref], :void
-  attach_function :get_memory_requirements, :aiGetMemoryRequirements, [Scene.by_ref, MemoryInfo.by_ref], :void
-  attach_function :create_property_store, :aiCreatePropertyStore, [], :pointer
-  attach_function :release_property_store, :aiReleasePropertyStore, [:pointer], :void
-  attach_function :set_import_property_integer, :aiSetImportPropertyInteger, [PropertyStore.by_ref, :string, :int], :void
-  attach_function :set_import_property_float, :aiSetImportPropertyFloat, [PropertyStore.by_ref, :string, :ai_real], :void
-  attach_function :set_import_property_string, :aiSetImportPropertyString, [PropertyStore.by_ref, :string, String.by_ref], :void
-  attach_function :set_import_property_matrix, :aiSetImportPropertyMatrix, [PropertyStore.by_ref, :string, Matrix4x4.by_ref], :void
-  attach_function :create_quaternion_from_matrix, :aiCreateQuaternionFromMatrix, [Quaternion.by_ref, Matrix3x3.by_ref], :void
-  attach_function :decompose_matrix, :aiDecomposeMatrix, [Matrix4x4.by_ref, Vector3D.by_ref, Quaternion.by_ref, Vector3D.by_ref], :void
-  attach_function :transpose_matrix4, :aiTransposeMatrix4, [Matrix4x4.by_ref], :void
-  attach_function :transpose_matrix3, :aiTransposeMatrix3, [Matrix3x3.by_ref], :void
-  attach_function :transform_vec_by_matrix3, :aiTransformVecByMatrix3, [Vector3D.by_ref, Matrix3x3.by_ref], :void
+  def self.import_file(file, flags: 0, fs: nil, props: nil)
+    if props
+      s = Assimp::aiImportFileExWithProperties(file, flags, fs, props)
+    else
+      s = Assimp::aiImportFileEx(file, flags, fs)
+    end
+    raise "Could not load model #{file}: #{Assimp::LogStream::error_string}!" if s.pointer.null?
+    s
+  end
+
+  attach_function :aiImportFileFromMemory, [:pointer, :uint, :uint, :string], Scene.by_ref
+  attach_function :aiImportFileFromMemoryWithProperties, [:pointer, :uint, :uint, :string, PropertyStore.by_ref], Scene.by_ref
+
+  def self.import_file_from_memory(buffer, flags: 0, hint: "", props: nil)
+    if props
+      s = Assimp::aiImportFileFromMemoryWithProperties(buffer, buffer.size, flags, hint, props)
+    else
+      s = Assimp::aiImportFileFromMemory(buffer, buffer.size, flags, hint)
+    end
+    raise "Could not load model: #{Assimp::LogStream::error_string}!" if s.pointer.null?
+    s
+  end
+
+  attach_function :aiReleaseImport, [Scene.by_ref], :void
+  attach_function :aiIsExtensionSupported, [:string], :bool
+
+  def self.extension_supported?(extension)
+    Assimp::aiIsExtensionSupported(extension)
+  end
+
+  attach_function :aiGetExtensionList, [String.by_ref], :void
+
+  def self.extension_list
+    s = String::new
+    Assimp::aiGetExtensionList(s)
+    s
+  end
+
+  attach_function :aiGetMemoryRequirements, [Scene.by_ref, MemoryInfo.by_ref], :void
+
+  attach_function :aiCreateQuaternionFromMatrix, [Quaternion.by_ref, Matrix3x3.by_ref], :void
+  attach_function :aiDecomposeMatrix, [Matrix4x4.by_ref, Vector3D.by_ref, Quaternion.by_ref, Vector3D.by_ref], :void
+  attach_function :aiTransposeMatrix4, [Matrix4x4.by_ref], :void
+  attach_function :aiTransposeMatrix3, [Matrix3x3.by_ref], :void
+  attach_function :aiTransformVecByMatrix3, [Vector3D.by_ref, Matrix3x3.by_ref], :void
   attach_function :transform_vec_by_matrix4, :aiTransformVecByMatrix4, [Vector3D.by_ref, Matrix4x4.by_ref], :void
-  attach_function :multiply_matrix4, :aiMultiplyMatrix4, [Matrix4x4.by_ref, Matrix4x4.by_ref], :void
-  attach_function :multiply_matrix3, :aiMultiplyMatrix3, [Matrix3x3.by_ref, Matrix3x3.by_ref], :void
-  attach_function :identity_matrix4, :aiIdentityMatrix4, [Matrix4x4.by_ref], :void
-  attach_function :identity_matrix3, :aiIdentityMatrix3, [Matrix3x3.by_ref], :void
-  attach_function :get_import_format_count, :aiGetImportFormatCount, [], :size_t
-  attach_function :get_import_format_description, :aiGetImportFormatDescription, [:size_t], ImporterDesc.by_ref
+  attach_function :aiMultiplyMatrix4, [Matrix4x4.by_ref, Matrix4x4.by_ref], :void
+  attach_function :aiMultiplyMatrix3, [Matrix3x3.by_ref, Matrix3x3.by_ref], :void
+  attach_function :aiIdentityMatrix4, [Matrix4x4.by_ref], :void
+  attach_function :aiIdentityMatrix3, [Matrix3x3.by_ref], :void
+  attach_function :aiGetImportFormatCount, [], :size_t
+  attach_function :aiGetImportFormatDescription, [:size_t], ImporterDesc.by_ref
+
+  def self.import_format_descriptions
+    count = Assimp::aiGetImportFormatCount
+    count.times.collect { |i| aiGetImportFormatDescription(i) }
+  end
 
 end

@@ -90,6 +90,14 @@ module Assimp
                                  [:lights, Light],
                                  [:cameras, Camera]
 
+    def self.inherited(klass)
+      klass.instance_variable_set(:@layout, @layout)
+    end
+
+    def self.release(ptr)
+      Assimp::aiReleaseImport(ptr)
+    end
+
     def each_node(&block)
       if block then
         node = root_node
@@ -101,13 +109,45 @@ module Assimp
     end
 
     def apply_post_processing(steps)
-      ptr = Assimp::apply_post_processing(self, steps)
+      ptr = Assimp::aiApplyPostProcessing(self, steps)
       raise "Post processing failed!" if ptr.null?
       self
     end
 
+    def memory_requirements
+      m = Assimp::MemoryInfo::new
+      Assimp::aiGetMemoryRequirements(self, m)
+      m
+    end
+
+    def copy
+      m = FFI::MemoryPointer::new(:pointer)
+      Assimp::aiCopyScene(self, m)
+      ptr = m.read_pointer
+      raise "Could not copy scene: #{Assimp::LogStream::error_string}" if ptr.null?
+      Assimp::SceneCopy::new(ptr)
+    end
+
+    def export(format_id, file_name, preprocessing: 0, io: nil)
+      if io
+        Assimp::aiExportSceneEx(self, format_id, file_name, io, preprocessing)
+      else
+        Assimp::aiExportScene(self, format_id, file_name, preprocessing)
+      end
+    end
+
+    def export_to_blob(format_id, preprocessing: 0)
+      ptr = Assimp::aiExportSceneToBlob(self, format_id, preprocessing)
+      raise "Could not export scene: #{Assimp::LogStream::error_string}" if ptr.null?
+      Assimp::ExportDataBlob::new(FFI::AutoPointer::new(ptr, Assimp::ExportDataBlob::method(:releaser)))
+    end
+
+  end
+
+  class SceneCopy < Scene
+
     def self.release(ptr)
-      Assimp::release_import(ptr)
+      Assimp::aiFreeScene(ptr)
     end
 
   end

@@ -1,6 +1,6 @@
 module Assimp
 
-  class ExportFormatDesc < FFI::Struct
+  class ExportFormatDesc < FFI::ManagedStruct
     extend StructAccessors
     layout :id, :string,
            :description, :string,
@@ -8,15 +8,28 @@ module Assimp
     struct_attr_reader :id,
                        :description,
                        :file_extension
+
+    def self.release(ptr)
+      Assimp::aiReleaseExportFormatDescription(ptr)
+    end
+
   end
 
-  attach_function :get_export_format_count, :aiGetExportFormatCount, [], :size_t
-  attach_function :get_export_format_description, :aiGetExportFormatDescription, [:size_t], ExportFormatDesc.ptr
-  attach_function :release_export_format_description, :aiReleaseExportFormatDescription, [ExportFormatDesc.ptr], :void
-  attach_function :copy_scene, :aiCopyScene, [Scene.ptr, :pointer], :void
-  attach_function :free_scene, :aiFreeScene, [Scene.ptr], :void
-  attach_function :export_scene, :aiExportScene, [Scene.ptr, :string, :string, PostProcessSteps], Return
-  attach_function :export_scene_ex, :aiExportSceneEx, [Scene.ptr, :string, :string, FileIO.ptr, PostProcessSteps], Return
+  attach_function :aiGetExportFormatCount, [], :size_t
+  attach_function :aiGetExportFormatDescription, [:size_t], ExportFormatDesc.ptr
+  attach_function :aiReleaseExportFormatDescription, [ExportFormatDesc.ptr], :void
+
+  def self.export_format_descriptions
+    count = Assimp::aiGetExportFormatCount
+    count.times.collect { |i|
+      Assimp::aiGetExportFormatDescription(i)
+    }
+  end
+
+  attach_function :aiCopyScene, [Scene.ptr, :pointer], :void
+  attach_function :aiFreeScene, [Scene.ptr], :void
+  attach_function :aiExportScene, [Scene.ptr, :string, :string, PostProcessSteps], Return
+  attach_function :aiExportSceneEx, [Scene.ptr, :string, :string, FileIO.ptr, PostProcessSteps], Return
 
   class ExportDataBlob < FFI::Struct
     extend StructAccessors
@@ -33,9 +46,13 @@ module Assimp
       name.to_s
     end
 
+    def self.releaser(ptr)
+      Assimp::aiReleaseExportBlob(ptr)
+    end
+
   end
 
-  attach_function :export_scene_to_blob, :aiExportSceneToBlob, [Scene.ptr, :string, PostProcessSteps], ExportDataBlob.ptr
-  attach_function :release_export_blob, :aiReleaseExportBlob, [ExportDataBlob.ptr], :void
+  attach_function :aiExportSceneToBlob, [Scene.ptr, :string, PostProcessSteps], :pointer #ExportDataBlob.ptr
+  attach_function :aiReleaseExportBlob, [ExportDataBlob.ptr], :void
 
 end

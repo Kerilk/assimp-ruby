@@ -13,7 +13,7 @@ module Assimp
 
     def self.identity
       m = Matrix4x4::new
-      Assimp::identity_matrix4(m)
+      Assimp::aiIdentityMatrix4(m)
       m
     end
 
@@ -75,12 +75,12 @@ EOF
       scaling = Vector3D::new
       rotation = Quaternion::new
       position = Vector3D::new
-      Assimp::decompose_matrix(self, scaling, rotation, position)
+      Assimp::aiDecomposeMatrix(self, scaling, rotation, position)
       [scaling, rotation, position]
     end
 
     def transpose!
-      Assimp::transpose_matrix4(self)
+      Assimp::aiTransposeMatrix4(self)
       self
     end
 
@@ -92,11 +92,11 @@ EOF
     def *(other)
       if other.kind_of?(Matrix4x4)
         m = self.dup
-        Assimp::multiply_matrix4(m, other)
+        Assimp::aiMultiplyMatrix4(m, other)
         m
       elsif other.kind_of?(Vector3D)
         v = other.dup
-        Assimp::transform_vec_by_matrix4(v, self)
+        Assimp::aiTransformVecByMatrix4(v, self)
         v
       else
         "Unsupported operand: #{other.inspect}!"

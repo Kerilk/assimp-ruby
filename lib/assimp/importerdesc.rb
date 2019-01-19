@@ -37,6 +37,6 @@ module Assimp
   end
 
   #Following function is not found in the ubuntu distribution
-  #attach_function :get_importer_desc, :aiGetImporterDesc, [:string], ImporterDesc.ptr
+  #attach_function :aiGetImporterDesc, [:string], ImporterDesc.ptr
 
 end

@@ -12,8 +12,8 @@ class AssimpTest < Minitest::Test
       $stderr.print user
       $stderr.print mess
     }
-    Assimp::enable_verbose_logging(Assimp::TRUE)
-    scene = Assimp::import_file("duck.dae", 0)
+    Assimp::LogStream::verbose(Assimp::TRUE)
+    scene = Assimp::import_file("duck.dae")
     log.detach
     assert_equal(1, scene.num_meshes)
     p scene.materials
@@ -57,6 +57,34 @@ class AssimpTest < Minitest::Test
     prop.pp_ptv_add_root_transformation = Assimp::TRUE
     prop.pp_gsn_max_smoothing_angle = 120.0
     prop.pp_ct_texture_channel_index = 3
+  end
+
+  def test_load_anim
+    puts Assimp::extension_list
+    log = Assimp::LogStream::stderr
+    log.attach
+    Assimp::LogStream::verbose(Assimp::TRUE)
+    scene = Assimp::import_file("astroBoy_walk_Maya.dae")
+    scene.each_node { |n|
+      puts n.name
+      puts n.num_children
+      puts n.num_meshes
+      p n[:meta_data]
+    }
+    puts "-------------------------------------"
+    scene.meshes.each { |m|
+      puts m.name
+    }
+    p scene.memory_requirements.total
+    Assimp::import_format_descriptions.each { |f| puts f }
+    Assimp::export_format_descriptions.each { |f| puts f.id }
+    puts Assimp::version
+    puts Assimp::aiGetVersionMinor
+    puts Assimp::compile_flags
+    puts scene.export_to_blob("collada").size
+    log.detach
+    scene = nil
+    GC.start
   end
 
 end

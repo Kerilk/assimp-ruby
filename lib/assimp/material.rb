@@ -209,7 +209,7 @@ module Assimp
 
     def property(key, type, index)
       ptr = FFI::MemoryPointer::new(:pointer)
-      res = Assimp::get_material_property(self, key, type, index, ptr)
+      res = Assimp::aiGetMaterialProperty(self, key, type, index, ptr)
       raise "get_material_property error!" unless res == :SUCCESS
       new_ptr = ptr.read_pointer
       return nil if new_ptr.null?
@@ -218,29 +218,29 @@ module Assimp
 
   end
 
-  attach_function :get_material_property, :aiGetMaterialProperty,
+  attach_function :aiGetMaterialProperty,
                   [Material.ptr, :string, :uint, :uint, :pointer ], Return
 
 
-  attach_function :get_material_float_array, :aiGetMaterialFloatArray,
+  attach_function :aiGetMaterialFloatArray,
                   [Material.ptr, :string, :uint, :uint, :pointer, :pointer], Return
 
-  attach_function :get_material_integer_array, :aiGetMaterialIntegerArray,
+  attach_function :aiGetMaterialIntegerArray,
                   [Material.ptr, :string, :uint, :uint, :pointer, :pointer], Return
 
-  attach_function :get_material_color, :aiGetMaterialColor,
+  attach_function :aiGetMaterialColor,
                   [Material.ptr, :string, :uint, :uint, Color4D.ptr], Return
 
-  attach_function :get_material_uv_transform, :aiGetMaterialUVTransform,
+  attach_function :aiGetMaterialUVTransform,
                   [Material.ptr, :string, :uint, :uint, UVTransform.ptr], Return
 
-  attach_function :get_material_string, :aiGetMaterialString,
+  attach_function :aiGetMaterialString,
                   [Material.ptr, :string, :uint, :uint, String.ptr], Return
 
-  attach_function :get_material_texture_count, :aiGetMaterialTextureCount,
+  attach_function :aiGetMaterialTextureCount,
                   [Material.ptr, TextureType], :uint
 
-  attach_function :get_material_texture, :aiGetMaterialTexture,
+  attach_function :aiGetMaterialTexture,
                   [Material.ptr, TextureType, :uint, String.ptr, :pointer, :uint, :pointer, :pointer, :pointer, :pointer], Return
 
 end

@@ -11,7 +11,7 @@ module Assimp
 
     def self.identity
       m = Matrix3x3::new
-      Assimp::identity_matrix3(m)
+      Assimp::aiIdentityMatrix3(m)
       m
     end
 
@@ -47,11 +47,11 @@ EOF
 
     def quaternion
       q = Quaternion::new
-      Assimp::create_quaternion_from_matrix(q, self)
+      Assimp::aiCreateQuaternionFromMatrix(q, self)
     end
 
     def transpose!
-      Assimp::transpose_matrix3(self)
+      Assimp::aiTransposeMatrix3(self)
       self
     end
 
@@ -63,11 +63,11 @@ EOF
     def *(other)
       if other.kind_of?(Matrix3x3)
         m = self.dup
-        Assimp::multiply_matrix3(m, other)
+        Assimp::aiMultiplyMatrix3(m, other)
         m
       elsif other.kind_of?(Vector3D)
         v = other.dup
-        Assimp::transform_vec_by_matrix3(v, self)
+        Assimp::aiTransformVecByMatrix3(v, self)
         v
       else
         "Unsupported operand: #{other.inspect}!"

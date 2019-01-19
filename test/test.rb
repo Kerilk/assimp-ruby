@@ -5,7 +5,16 @@ require 'assimp'
 class AssimpTest < Minitest::Test
 
   def test_load
+    #log = Assimp::get_predefined_log_stream(:STDERR, nil)
+    log = Assimp::LogStream::new
+    log.user = "hello"
+    log.attach { |mess, user|
+      $stderr.print user
+      $stderr.print mess
+    }
+    Assimp::enable_verbose_logging(Assimp::TRUE)
     scene = Assimp::import_file("duck.dae", 0)
+    log.detach
     assert_equal(1, scene.num_meshes)
     p scene.materials
     scene.materials.each { |m|
@@ -41,6 +50,13 @@ class AssimpTest < Minitest::Test
     }
     p scene.num_textures
     p scene.textures
+    scene.apply_post_processing(0)
+    prop = Assimp::PropertyStore::new
+    prop.pp_og_exclude_list = ["a", "ab"]
+    prop.pp_ptv_root_transformation = Assimp::Matrix4x4::new
+    prop.pp_ptv_add_root_transformation = Assimp::TRUE
+    prop.pp_gsn_max_smoothing_angle = 120.0
+    prop.pp_ct_texture_channel_index = 3
   end
 
 end

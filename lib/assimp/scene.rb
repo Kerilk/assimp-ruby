@@ -56,7 +56,7 @@ module Assimp
     :FLAGS_ALLOW_SHARED
   ])
 
-  class Scene < FFI::Struct
+  class Scene < FFI::ManagedStruct
     extend StructAccessors
 
     layout :flags, SceneFlags,
@@ -98,6 +98,16 @@ module Assimp
       else
         to_enum(:each_obj)
       end
+    end
+
+    def apply_post_processing(steps)
+      ptr = Assimp::apply_post_processing(self, steps)
+      raise "Post processing failed!" if ptr.null?
+      self
+    end
+
+    def self.release(ptr)
+      Assimp::release_import(ptr)
     end
 
   end

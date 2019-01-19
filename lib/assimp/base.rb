@@ -10,6 +10,18 @@ module Assimp
       }
     end
 
+    def struct_attr_writer(*args)
+      args.each { |attr|
+        raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)
+        define_method(attr.to_s+"=") { |o| self[attr] = o }
+      }
+    end
+
+    def struct_attr_accessor(*args)
+      struct_attr_reader(*args)
+      struct_attr_writer(*args)
+    end
+
     def struct_array_attr_reader(*args)
       args.each { |attr, klass, count|
         raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)

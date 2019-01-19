@@ -43,7 +43,14 @@ module Assimp
     struct_attr_reader :length
 
     def data
-      self[:data].to_a[0...length].pack("U*")
+      (pointer + Assimp.find_type(:size_t).size).read_string(length)
+    end
+
+    def data=(str)
+      sz = str.bytesize
+      raise "String too long #{sz} > #{MAXLEN-1}!" if sz > MAXLEN-1
+      self[:length] = sz
+      (pointer + Assimp.find_type(:size_t).size).write_string(str+"\x00")
     end
 
     def to_s

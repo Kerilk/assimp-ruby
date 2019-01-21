@@ -72,7 +72,8 @@ module Assimp
            :num_lights, :uint,
            :lights, :pointer, #Light*[num_lights]
            :num_cameras, :uint,
-           :cameras, :pointer #Camera*[num_cameras]
+           :cameras, :pointer, #Camera*[num_cameras]
+           :private, :pointer #void * really...
 
     struct_attr_accessor :flags,
                          :root_node,
@@ -81,7 +82,8 @@ module Assimp
                          :num_animations,
                          :num_textures,
                          :num_lights,
-                         :num_cameras
+                         :num_cameras,
+                         :private
 
     struct_ref_array_attr_reader [:meshes, Mesh],
                                  [:materials, Material],

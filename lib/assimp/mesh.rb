@@ -12,7 +12,7 @@ module Assimp
     layout :num_indices, :uint,
            :indices, :pointer #:uint[num_indices]
 
-    struct_attr_reader :num_indices
+    struct_attr_accessor :num_indices
 
     struct_array_attr_reader [:indices, :uint]
 
@@ -24,8 +24,8 @@ module Assimp
     layout :vertex_id, :uint,
            :weight, :float
 
-    struct_attr_reader :vertex_id,
-                       :weight
+    struct_attr_accessor :vertex_id,
+                         :weight
   end
 
   class Bone < FFI::Struct
@@ -129,14 +129,14 @@ module Assimp
            :anim_meshes, :pointer, #AnimMesh*[num_anim_meshes]
            :method, MorphingMethod
 
-    struct_attr_reader :primitive_types,
-                       :num_vertices,
-                       :num_faces,
-                       :num_bones,
-                       :material_index,
-                       :name,
-                       :num_anim_meshes,
-                       :method
+    struct_attr_reader :name
+    struct_attr_accessor :primitive_types,
+                         :num_vertices,
+                         :num_faces,
+                         :num_bones,
+                         :material_index,
+                         :num_anim_meshes,
+                         :method
 
     struct_array_attr_reader [:vertices, Vector3D],
                              [:normals, Vector3D, :num_vertices],
@@ -146,6 +146,10 @@ module Assimp
 
     struct_ref_array_attr_reader [:bones, Bone],
                                  [:anim_meshes, AnimMesh]
+
+    def name=(str)
+      name.data = str
+    end
 
     def colors
       cs = self[:colors].to_a

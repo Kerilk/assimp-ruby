@@ -60,6 +60,10 @@ class AssimpTest < Minitest::Test
   end
 
   def test_load_anim
+    str = Assimp::String::new
+    str.data = "toto"
+    assert_equal( 4, str.length )
+    assert_equal( "toto", str.to_s )
     puts Assimp::extension_list
     log = Assimp::LogStream::stderr
     log.attach

@@ -6,7 +6,7 @@ module Assimp
            :g, :ai_real,
            :b, :ai_real,
            :a, :ai_real
-    struct_attr_reader :r, :g, :b, :a
+    struct_attr_accessor :r, :g, :b, :a
 
     def to_s
       "[#{r}, #{g}, #{b}, #{a}]"

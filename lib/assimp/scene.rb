@@ -13,9 +13,9 @@ module Assimp
            :meta_data, :pointer #Metadata.ptr
 
     struct_attr_reader :name,
-                       :transformation,
-                       :num_children,
-                       :num_meshes
+                       :transformation
+    struct_attr_accessor :num_children,
+                         :num_meshes
 
     struct_ref_array_attr_reader [:children, Node]
 
@@ -74,14 +74,14 @@ module Assimp
            :num_cameras, :uint,
            :cameras, :pointer #Camera*[num_cameras]
 
-    struct_attr_reader :flags,
-                       :root_node,
-                       :num_meshes,
-                       :num_materials,
-                       :num_animations,
-                       :num_textures,
-                       :num_lights,
-                       :num_cameras
+    struct_attr_accessor :flags,
+                         :root_node,
+                         :num_meshes,
+                         :num_materials,
+                         :num_animations,
+                         :num_textures,
+                         :num_lights,
+                         :num_cameras
 
     struct_ref_array_attr_reader [:meshes, Mesh],
                                  [:materials, Material],

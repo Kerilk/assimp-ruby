@@ -62,6 +62,11 @@ module Assimp
        out
     end
 
+    def identity!
+      Assimp::aiIdentityMatrix4(self)
+      self
+    end
+
     def to_s
       <<EOF
 < <#{a1}, #{a2}, #{a3}, #{a4}>,

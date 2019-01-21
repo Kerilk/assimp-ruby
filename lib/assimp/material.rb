@@ -121,11 +121,11 @@ module Assimp
            :data_length, :uint,
            :type, PropertyTypeInfo,
            :data, :pointer #byte[data_length]
-    struct_attr_reader :key,
-                       :semantic,
-                       :index,
-                       :data_length,
-                       :type
+    struct_attr_reader :key
+    struct_attr_accessor :semantic,
+                         :index,
+                         :data_length,
+                         :type
     def data
       key = self[:key].to_s
       case type
@@ -200,11 +200,11 @@ module Assimp
 
   class Material < FFI::Struct
     extend StructAccessors
-    layout :properties, :pointer, #MaterialProperty*
+    layout :properties, :pointer, #MaterialProperty*[num_properties]
            :num_properties, :uint,
            :num_allocated, :uint
-    struct_attr_reader :num_properties,
-                       :num_allocated
+    struct_attr_accessor :num_properties,
+                         :num_allocated
     struct_ref_array_attr_reader [:properties, MaterialProperty]
 
     def property(key, type, index)

@@ -17,9 +17,9 @@ module Assimp
                          :num_children,
                          :num_meshes
 
-    struct_ref_array_attr_reader [:children, Node]
+    struct_ref_array_attr_accessor [:children, Node]
 
-    struct_array_attr_reader [:meshes, :uint]
+    struct_array_attr_accessor [:meshes, :uint]
 
     def parent
       ptr = self[:parent]
@@ -85,12 +85,12 @@ module Assimp
                          :num_cameras,
                          :private
 
-    struct_ref_array_attr_reader [:meshes, Mesh],
-                                 [:materials, Material],
-                                 [:animations, Animation],
-                                 [:textures, Texture],
-                                 [:lights, Light],
-                                 [:cameras, Camera]
+    struct_ref_array_attr_accessor [:meshes, Mesh],
+                                   [:materials, Material],
+                                   [:animations, Animation],
+                                   [:textures, Texture],
+                                   [:lights, Light],
+                                   [:cameras, Camera]
 
     def self.inherited(klass)
       klass.instance_variable_set(:@layout, @layout)

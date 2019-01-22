@@ -32,8 +32,8 @@ module Assimp
            :num_values_and_weights, :uint
     struct_attr_accessor :time,
                          :num_values_and_weights
-    struct_array_attr_reader [:values, :uint, :num_values_and_weights],
-                             [:weights, :double, :num_values_and_weights]
+    struct_array_attr_accessor [:values, :uint, :num_values_and_weights],
+                               [:weights, :double, :num_values_and_weights]
   end
 
   AnimBehaviour = enum(:anim_behavior, [
@@ -61,9 +61,9 @@ module Assimp
                          :pre_state,
                          :post_state
 
-    struct_array_attr_reader [:position_keys, VectorKey],
-                             [:rotation_keys, QuatKey],
-                             [:scaling_keys, VectorKey]
+    struct_array_attr_accessor [:position_keys, VectorKey],
+                               [:rotation_keys, QuatKey],
+                               [:scaling_keys, VectorKey]
 
     def to_s
       node_name
@@ -78,7 +78,7 @@ module Assimp
            :keys, :pointer #MeshKey
     struct_attr_accessor :name,
                          :num_keys
-    struct_array_attr_reader [:keys, MeshKey]
+    struct_array_attr_accessor [:keys, MeshKey]
 
     def to_s
       name
@@ -93,7 +93,7 @@ module Assimp
            :keys, :pointer #MeshMorphKey
     struct_attr_accessor :name,
                          :num_keys
-    struct_array_attr_reader [:keys, MeshMorphKey]
+    struct_array_attr_accessor [:keys, MeshMorphKey]
 
     def to_s
       name
@@ -118,9 +118,9 @@ module Assimp
                          :num_channels,
                          :num_mesh_channels,
                          :num_morph_mesh_channels
-    struct_ref_array_attr_reader [:channels, NodeAnim],
-                                 [:mesh_channels, MeshAnim],
-                                 [:morph_mesh_channels, MeshMorphAnim]
+    struct_ref_array_attr_accessor [:channels, NodeAnim],
+                                   [:mesh_channels, MeshAnim],
+                                   [:morph_mesh_channels, MeshMorphAnim]
 
     def to_s
       name

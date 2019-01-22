@@ -204,7 +204,7 @@ module Assimp
            :num_allocated, :uint
     struct_attr_accessor :num_properties,
                          :num_allocated
-    struct_ref_array_attr_reader [:properties, MaterialProperty]
+    struct_ref_array_attr_accessor [:properties, MaterialProperty]
 
     def property(key, type, index)
       ptr = FFI::MemoryPointer::new(:pointer)

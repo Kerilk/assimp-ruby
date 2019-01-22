@@ -46,8 +46,8 @@ module Assimp
            :keys, :pointer, #String[num_properties]
            :values, :pointer #MetadataEntry[num_properties]
     struct_attr_accessor :num_properties
-    struct_array_attr_reader [:values, MetadataEntry, :num_properties],
-                             [:keys, String, :num_properties]
+    struct_array_attr_accessor [:values, MetadataEntry, :num_properties],
+                               [:keys, String, :num_properties]
   end
 
 end

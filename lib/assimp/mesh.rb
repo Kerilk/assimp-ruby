@@ -14,7 +14,7 @@ module Assimp
 
     struct_attr_accessor :num_indices
 
-    struct_array_attr_reader [:indices, :uint]
+    struct_array_attr_accessor [:indices, :uint]
 
   end
 
@@ -40,7 +40,7 @@ module Assimp
                          :num_weights,
                          :offset_matrix
 
-    struct_array_attr_reader [:weights, VertexWeight]
+    struct_array_attr_accessor [:weights, VertexWeight]
 
   end
 
@@ -66,10 +66,10 @@ module Assimp
     struct_attr_accessor :num_vertices,
                          :weight
 
-    struct_array_attr_reader [:vertices, Vector3D],
-                             [:normals, Vector3D, :num_vertices],
-                             [:tangents, Vector3D, :num_vertices],
-                             [:bitangents, Vector3D, :num_vertices]
+    struct_array_attr_accessor [:vertices, Vector3D],
+                               [:normals, Vector3D, :num_vertices],
+                               [:tangents, Vector3D, :num_vertices],
+                               [:bitangents, Vector3D, :num_vertices]
 
     def colors
       cs = self[:colors].to_a
@@ -85,6 +85,23 @@ module Assimp
       }
     end
 
+    def set_colors(index, colors)
+      @colors = [nil]*MAX_NUMBER_OF_COLOR_SETS unless @colors
+      raise "Invalid colors index #{index}!" if index < 0 || index >= MAX_NUMBER_OF_COLOR_SETS
+      unless colors && colors.length > 0
+        @colors[index] = nil
+        return self
+      end
+      raise "Invalid colors count: #{colors.length}!" if num_vertices != colors.length
+      ptr = FFI::MemoryPointer::new(Assimp::Color4D, num_vertices)
+      s = Assimp::Color4D.size
+      colors.each_with_index { |v, i|
+        ptr.put_array_of_uint8(i*s, v.pointer.read_array_of_uint8(s))
+      }
+      @colors[index] = ptr
+      self
+    end
+
     def texture_coords
       tcs = self[:texture_coords].to_a
       tcs.collect { |tc_ptr|
@@ -97,6 +114,23 @@ module Assimp
           }
         end
       }
+    end
+
+    def set_texture_coords(index, uvs)
+      @texture_coords = [nil]*MAX_NUMBER_OF_TEXTURECOORDS unless @texture_coords
+      raise "Invalid texture_coords index #{index}!" if index < 0 || index >= MAX_NUMBER_OF_TEXTURECOORDS
+      unless uvs && uvs.length > 0
+        @texture_coords[index] = nil
+        return self
+      end
+      raise "Invalid texture_coords count: #{uvs.length}!" if num_vertices != uvs.length
+      ptr = FFI::MemoryPointer::new(Assimp::Vector3D, num_vertices)
+      s = Assimp::Vector3D.size
+      uvs.each_with_index { |v, i|
+        ptr.put_array_of_uint8(i*s, v.pointer.read_array_of_uint8(s))
+      }
+      @texture_coords[index] = ptr
+      self
     end
 
   end
@@ -133,19 +167,20 @@ module Assimp
                          :primitive_types,
                          :num_vertices,
                          :num_faces,
+                         :num_uv_components,
                          :num_bones,
                          :material_index,
                          :num_anim_meshes,
                          :method
 
-    struct_array_attr_reader [:vertices, Vector3D],
-                             [:normals, Vector3D, :num_vertices],
-                             [:tangents, Vector3D, :num_vertices],
-                             [:bitangents, Vector3D, :num_vertices],
-                             [:faces, Face]
+    struct_array_attr_accessor [:vertices, Vector3D],
+                               [:normals, Vector3D, :num_vertices],
+                               [:tangents, Vector3D, :num_vertices],
+                               [:bitangents, Vector3D, :num_vertices],
+                               [:faces, Face]
 
-    struct_ref_array_attr_reader [:bones, Bone],
-                                 [:anim_meshes, AnimMesh]
+    struct_ref_array_attr_accessor [:bones, Bone],
+                                   [:anim_meshes, AnimMesh]
 
     def colors
       cs = self[:colors].to_a
@@ -159,6 +194,24 @@ module Assimp
           }
         end
       }
+    end
+
+    def set_colors(index, colors)
+      @colors = [nil]*MAX_NUMBER_OF_COLOR_SETS unless @colors
+      raise "Invalid colors index #{index}!" if index < 0 || index >= MAX_NUMBER_OF_COLOR_SETS
+      unless colors && colors.length > 0
+        @colors[index] = nil
+        return self
+      end
+      raise "Invalid colors count: #{colors.length}!" if num_vertices != colors.length
+      ptr = FFI::MemoryPointer::new(Assimp::Color4D, num_vertices)
+      s = Assimp::Color4D.size
+      colors.each_with_index { |v, i|
+        ptr.put_array_of_uint8(i*s, v.pointer.read_array_of_uint8(s))
+      }
+      @colors[index] = ptr
+      self[:colors][index] = ptr
+      self
     end
 
     def texture_coords
@@ -175,8 +228,22 @@ module Assimp
       }
     end
 
-    def num_uv_components
-      self[:num_uv_components].to_a
+    def set_texture_coords(index, uvs)
+      @texture_coords = [nil]*MAX_NUMBER_OF_TEXTURECOORDS unless @texture_coords
+      raise "Invalid texture_coords index #{index}!" if index < 0 || index >= MAX_NUMBER_OF_TEXTURECOORDS
+      unless uvs && uvs.length > 0
+        @texture_coords[index] = nil
+        return self
+      end
+      raise "Invalid texture_coords count: #{uvs.length}!" if num_vertices != uvs.length
+      ptr = FFI::MemoryPointer::new(Assimp::Vector3D, num_vertices)
+      s = Assimp::Vector3D.size
+      uvs.each_with_index { |v, i|
+        ptr.put_array_of_uint8(i*s, v.pointer.read_array_of_uint8(s))
+      }
+      @texture_coords[index] = ptr
+      self[:texture_coords][index] = ptr
+      self
     end
 
   end

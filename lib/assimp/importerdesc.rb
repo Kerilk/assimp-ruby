@@ -31,7 +31,7 @@ module Assimp
                        :max_minor,
                        :file_extensions
     def to_s
-      name.to_s
+      name
     end
 
   end

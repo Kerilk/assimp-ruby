@@ -20,7 +20,7 @@ module Assimp
     def struct_attr_writer(*args)
       args.each { |attr|
         raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)
-        if @layout[attr].type == FFI::StructByValue && @layout[attr].type.struct_class == Assimp::String
+        if @layout[attr].type.kind_of?( FFI::StructByValue ) && @layout[attr].type.struct_class == Assimp::String
           define_method(attr.to_s+"=") { |o| self[attr].data = o }
         else
           define_method(attr.to_s+"=") { |o| self[attr] = o }

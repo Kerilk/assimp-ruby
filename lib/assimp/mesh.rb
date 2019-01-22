@@ -36,9 +36,9 @@ module Assimp
            :weights, :pointer, #VertexWeight[num_weights]
            :offset_matrix, Matrix4x4
 
-    struct_attr_reader :name,
-                       :num_weights,
-                       :offset_matrix
+    struct_attr_accessor :name,
+                         :num_weights,
+                         :offset_matrix
 
     struct_array_attr_reader [:weights, VertexWeight]
 
@@ -63,8 +63,8 @@ module Assimp
            :num_vertices, :uint,
            :weight, :float
 
-    struct_attr_reader :num_vertices,
-                       :weight
+    struct_attr_accessor :num_vertices,
+                         :weight
 
     struct_array_attr_reader [:vertices, Vector3D],
                              [:normals, Vector3D, :num_vertices],
@@ -129,8 +129,8 @@ module Assimp
            :anim_meshes, :pointer, #AnimMesh*[num_anim_meshes]
            :method, MorphingMethod
 
-    struct_attr_reader :name
-    struct_attr_accessor :primitive_types,
+    struct_attr_accessor :name,
+                         :primitive_types,
                          :num_vertices,
                          :num_faces,
                          :num_bones,
@@ -146,10 +146,6 @@ module Assimp
 
     struct_ref_array_attr_reader [:bones, Bone],
                                  [:anim_meshes, AnimMesh]
-
-    def name=(str)
-      name.data = str
-    end
 
     def colors
       cs = self[:colors].to_a

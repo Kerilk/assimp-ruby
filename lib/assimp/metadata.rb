@@ -14,7 +14,7 @@ module Assimp
     extend StructAccessors
     layout :type, MetadataType,
            :data, :pointer
-    struct_attr_reader :type
+    struct_attr_accessor :type
 
     def data
       d = self[:data]
@@ -45,7 +45,7 @@ module Assimp
     layout :num_properties, :uint,
            :keys, :pointer, #String[num_properties]
            :values, :pointer #MetadataEntry[num_properties]
-    struct_attr_reader :num_properties
+    struct_attr_accessor :num_properties
     struct_array_attr_reader [:values, MetadataEntry, :num_properties],
                              [:keys, String, :num_properties]
   end

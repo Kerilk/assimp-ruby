@@ -43,7 +43,7 @@ module Assimp
                        :next
     
     def to_s
-      name.to_s
+      name
     end
 
     def self.releaser(ptr)

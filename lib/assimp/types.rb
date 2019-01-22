@@ -6,7 +6,7 @@ module Assimp
            :b, :ai_real,
            :c, :ai_real,
            :d, :ai_real
-    struct_attr_reader :a, :b, :c, :d
+    struct_attr_accessor :a, :b, :c, :d
     def to_s
       "(#{a}, #{b}, #{c}, #{d})"
     end
@@ -16,7 +16,7 @@ module Assimp
     extend StructAccessors
     layout :pos, Vector3D,
            :dir, Vector3D
-    struct_attr_reader :pos, :dir
+    struct_attr_accessor :pos, :dir
 
     def to_s
       "|#{pos}, #{dir}|"
@@ -28,14 +28,14 @@ module Assimp
     layout :r, :ai_real,
            :g, :ai_real,
            :b, :ai_real
-    struct_attr_reader :r, :g, :b
+    struct_attr_accessor :r, :g, :b
 
     def to_s
       "[#{r}, #{g}, #{b}]"
     end
   end
 
-  class String < FFI::Struct
+  class String #< FFI::Struct
     extend StructAccessors
     MAXLEN = 1024
     layout :length, :size_t,

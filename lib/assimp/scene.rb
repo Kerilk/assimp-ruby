@@ -12,9 +12,9 @@ module Assimp
            :meshes, :pointer, #uint[num_meshes]
            :meta_data, :pointer #Metadata.ptr
 
-    struct_attr_reader :name,
-                       :transformation
-    struct_attr_accessor :num_children,
+    struct_attr_accessor :name,
+                         :transformation,
+                         :num_children,
                          :num_meshes
 
     struct_ref_array_attr_reader [:children, Node]

@@ -7,7 +7,7 @@ module Assimp
            :g, :uchar,
            :r, :uchar,
            :a, :uchar
-    struct_attr_reader :b, :g, :r, :a
+    struct_attr_accessor :b, :g, :r, :a
     def to_s
       "[#{r}, #{g}, #{b}, #{a}]"
     end
@@ -19,8 +19,8 @@ module Assimp
            :height, :uint,
            :format_hint, [:char, 9],
            :data, :pointer #Texel[width*height]
-    struct_attr_reader :width,
-                       :height
+    struct_attr_accessor :width,
+                         :height
 
     def format_hint
       self[:format_hint].to_a.pack("U*")

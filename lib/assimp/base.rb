@@ -2,18 +2,29 @@ module Assimp
   extend FFI::Library
   ffi_lib 'assimp'
 
+  class String < FFI::Struct
+  end
+
   module StructAccessors
     def struct_attr_reader(*args)
       args.each { |attr|
         raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)
-        define_method(attr) { self[attr] }
+        if @layout[attr].type.kind_of?( FFI::StructByValue ) && @layout[attr].type.struct_class == Assimp::String
+          define_method(attr) { self[attr].data }
+        else
+          define_method(attr) { self[attr] }
+        end
       }
     end
 
     def struct_attr_writer(*args)
       args.each { |attr|
         raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)
-        define_method(attr.to_s+"=") { |o| self[attr] = o }
+        if @layout[attr].type == FFI::StructByValue && @layout[attr].type.struct_class == Assimp::String
+          define_method(attr.to_s+"=") { |o| self[attr].data = o }
+        else
+          define_method(attr.to_s+"=") { |o| self[attr] = o }
+        end
       }
     end
 

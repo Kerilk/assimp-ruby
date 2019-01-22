@@ -6,7 +6,7 @@ module Assimp
     extend StructAccessors
     layout :callback, :log_stream_callback,
            :user, :pointer
-    struct_attr_reader :callback, :user
+    struct_attr_accessor :callback, :user
 
     def self.detach_all
       Assimp::aiDetachAllLogStreams
@@ -46,7 +46,7 @@ module Assimp
     def attach(&block)
       if block_given?
         @block = FFI::Function.new(:void, [:string, :string], &block)
-        self[:callback] = @block
+        self.callback = @block
       end
       Assimp::aiAttachLogStream(self)
     end

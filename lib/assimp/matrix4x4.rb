@@ -6,10 +6,10 @@ module Assimp
            :b1, :ai_real, :b2, :ai_real, :b3, :ai_real, :b4, :ai_real,
            :c1, :ai_real, :c2, :ai_real, :c3, :ai_real, :c4, :ai_real,
            :d1, :ai_real, :d2, :ai_real, :d3, :ai_real, :d4, :ai_real
-    struct_attr_reader :a1, :a2, :a3, :a4,
-                       :b1, :b2, :b3, :b4,
-                       :c1, :c2, :c3, :c4,
-                       :d1, :d2, :d3, :d4
+    struct_attr_accessor :a1, :a2, :a3, :a4,
+                         :b1, :b2, :b3, :b4,
+                         :c1, :c2, :c3, :c4,
+                         :d1, :d2, :d3, :d4
 
     def self.identity
       m = Matrix4x4::new

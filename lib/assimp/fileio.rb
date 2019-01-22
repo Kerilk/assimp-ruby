@@ -22,9 +22,9 @@ module Assimp
     layout :open_proc, :file_open_proc,
            :close_proc, :file_close_proc,
            :user_data, :user_data
-    struct_attr_reader :open_proc,
-                       :close_proc,
-                       :user_data
+    struct_attr_accessor :open_proc,
+                         :close_proc
+    struct_attr_reader :user_data
   end
 
   class File
@@ -36,13 +36,13 @@ module Assimp
            :seek_proc, :file_seek,
            :flush_proc, :file_flush_proc,
            :user_data, :user_data
-    struct_attr_reader :read_proc,
-                       :write_proc,
-                       :tell_proc,
-                       :file_size_proc,
-                       :seek_proc,
-                       :flush_proc,
-                       :user_data
+    struct_attr_accessor :read_proc,
+                         :write_proc,
+                         :tell_proc,
+                         :file_size_proc,
+                         :seek_proc,
+                         :flush_proc
+    struct_attr_reader :user_data
   end
 
 end

@@ -71,9 +71,9 @@ module Assimp
     layout :translation, Vector2D,
            :scaling, Vector2D,
            :rotation, :ai_real
-    struct_attr_reader :translation,
-                       :scaling,
-                       :rotation
+    struct_attr_accessor :translation,
+                         :scaling,
+                         :rotation
   end
 
   PropertyTypeInfo = enum(:property_type_info, [
@@ -121,13 +121,12 @@ module Assimp
            :data_length, :uint,
            :type, PropertyTypeInfo,
            :data, :pointer #byte[data_length]
-    struct_attr_reader :key
-    struct_attr_accessor :semantic,
+    struct_attr_accessor :key,
+                         :semantic,
                          :index,
                          :data_length,
                          :type
     def data
-      key = self[:key].to_s
       case type
       when :String
         length = self[:data].read_uint 
@@ -194,7 +193,7 @@ module Assimp
     end
 
     def to_s
-      "#{self[:key].to_s}: #{data}"
+      "#{key}: #{data}"
     end
   end
 

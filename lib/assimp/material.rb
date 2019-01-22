@@ -126,6 +126,8 @@ module Assimp
                          :index,
                          :data_length,
                          :type
+
+    @__has_ref = true
     def data
       case type
       when :String

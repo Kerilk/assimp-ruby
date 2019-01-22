@@ -27,6 +27,17 @@ module Assimp
       Node::new(ptr)
     end
 
+    def parent=(other)
+      if other.kind_of? FFI::Pointer
+        self[:parent] = other
+      elsif other.kind_of? Node
+        self[:parent] = other.pointer
+      else
+        raise ArgumentError::new("Argument should be a Node!")
+      end
+      other
+    end
+
     def each_node(&block)
       if block then
         block.call self

@@ -6,6 +6,15 @@ module Assimp
   end
 
   module StructAccessors
+
+    def self.extended(mod)
+      mod.instance_variable_set(:@__has_ref, false)
+    end
+
+    def has_ref?
+      @__has_ref
+    end
+
     def struct_attr_reader(*args)
       args.each { |attr|
         raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)
@@ -22,6 +31,9 @@ module Assimp
         raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)
         if @layout[attr].type.kind_of?( FFI::StructByValue ) && @layout[attr].type.struct_class == Assimp::String
           define_method(attr.to_s+"=") { |o| self[attr].data = o }
+        elsif @layout[attr].type.kind_of?( FFI::StructByValue ) && @layout[attr].type.struct_class.has_ref?
+          @__has_ref = true
+          define_method(attr.to_s+"=") { |o| self.instance_variable_set(:"@#{attr}", o); self[attr] = o }
         else
           define_method(attr.to_s+"=") { |o| self[attr] = o }
         end
@@ -74,6 +86,7 @@ module Assimp
     def struct_array_attr_writer(*args)
       args.each { |attr, klass, count|
         raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)
+        @__has_ref = true
         t = nil
         s = nil
         if klass.kind_of? Symbol
@@ -96,6 +109,7 @@ module Assimp
           end
         elsif klass.kind_of?(Class) && klass < FFI::Struct
           s = klass.size
+          k = klass
           define_method(:"#{attr}=") do |values|
             values = [] if values.nil?
             if count
@@ -107,7 +121,11 @@ module Assimp
             values.each_with_index { |v, i|
               ptr.put_array_of_uint8(i*s, v.pointer.read_array_of_uint8(s))
             }
-            self.instance_variable_set(:"@#{attr}", ptr)
+            if k.has_ref?
+              self.instance_variable_set(:"@#{attr}", [ptr, values])
+            else
+              self.instance_variable_set(:"@#{attr}", ptr)
+            end
             self[attr] = ptr
             values
           end
@@ -151,6 +169,7 @@ module Assimp
     def struct_ref_array_attr_writer(*args)
       args.each { |attr, klass, count|
         raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)
+        @__has_ref = true
         define_method(:"#{attr}=") do |values|
           values = [] if values.nil?
           if count

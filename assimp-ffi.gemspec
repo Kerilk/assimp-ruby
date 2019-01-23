@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name = 'assimp'
+  s.name = 'assimp-ffi'
   s.version = "0.1.0"
   s.author = "Brice Videau"
   s.email = "brice.videau@imag.fr"

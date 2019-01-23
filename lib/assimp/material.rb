@@ -225,9 +225,9 @@ module Assimp
           case key
           when *BOOL_PROPERTIES
             if val.nil? || val == false || val == 0
-              i = ASSIMP::FALSE
+              i = Assimp::FALSE
             else
-              i = ASSIMP::TRUE
+              i = Assimp::TRUE
             end
           when MATKEY_SHADING_MODEL
             i = ShadingMode.to_native(val, nil)
@@ -255,6 +255,7 @@ module Assimp
           ptr = FFI::MemoryPointer::new(val.class.size)
           ptr.write_array_of_uint8(val.pointer.read_array_of_uint8(val.class.size))
         else
+          ptr = FFI::MemoryPointer::new(:float)
           ptr.write_float(val)
         end
       when :Double

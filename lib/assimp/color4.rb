@@ -8,6 +8,14 @@ module Assimp
            :a, :ai_real
     struct_attr_accessor :r, :g, :b, :a
 
+    def set(r, g, b, a)
+      self.r = r
+      self.g = g
+      self.b = b
+      self.a = a
+      self
+    end
+
     def to_s
       "[#{r}, #{g}, #{b}, #{a}]"
     end

@@ -172,6 +172,11 @@ module Assimp
 
     @__has_ref = true
 
+    def self.property(key, val, semantic: 0, index: 0, type: nil)
+      p = MaterialProperty::new
+      p.set_property(key, val, semantic: semantic, index: index, type: type)
+    end
+
     def set_property(key, val, semantic: 0, index: 0, type: nil)
       if type
         self.type = type
@@ -375,6 +380,27 @@ module Assimp
       new_ptr = ptr.read_pointer
       return nil if new_ptr.null?
       MaterialProperty::new(new_ptr)
+    end
+
+    def add_property(key, val, semantic: 0, index: 0, type: nil)
+      push(MaterialProperty::property(key, val, semantic: semantic, index: index, type: type))
+    end
+
+    def push(property)
+      @properties = [nil, []] unless @properties
+      @properties[1].push(property)
+      if num_allocated > num_properties
+        self[:properties].put_pointer(FFI::Pointer.size*num_properties, property.pointer)
+      else
+        self.num_allocated = [32, num_allocated*2].max
+        new_ptr = FFI::MemoryPointer::new(:pointer, num_allocated)
+        new_ptr.write_array_of_pointer(self[:properties].read_array_of_pointer(num_properties)) unless self[:properties].null?
+        new_ptr[num_properties].write_pointer(property.pointer)
+        @properties[0] = new_ptr
+        self[:properties] = new_ptr
+      end
+      self.num_properties += 1
+      self
     end
 
   end

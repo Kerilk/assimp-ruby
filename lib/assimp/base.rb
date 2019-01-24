@@ -1,6 +1,11 @@
 module Assimp
   extend FFI::Library
-  ffi_lib 'assimp'
+
+  if ENV['ASSIMP_PATH']
+    ffi_lib(ENV['ASSIMP_PATH'])
+  else
+    ffi_lib 'assimp'
+  end
 
   class String < FFI::Struct
   end

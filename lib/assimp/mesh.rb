@@ -42,6 +42,35 @@ module Assimp
 
     struct_array_attr_accessor [:weights, VertexWeight]
 
+    def initialize(ptr = nil)
+      if ptr
+        super
+      else
+        ptr = FFI::MemoryPointer::new(self.class.size, 1, true)
+        super(ptr)
+        offset_matrix.identity!
+      end
+    end
+
+    def add_weight(vertex_id, weight)
+      vw = VertexWeight::new
+      vw.vertex_id = vertex_id
+      vw.weight = weight
+      push(vw)
+    end
+
+    def push(weight)
+      new_ptr = FFI::MemoryPointer::new(VertexWeight, num_weights + 1)
+      ptr = self[:weights]
+      s = VertexWeight.size
+      new_ptr.write_array_of_uint8(ptr.read_array_of_uint8(s*num_weights)) unless ptr.null?
+      new_ptr.put_array_of_uint8(num_weights*s, weight.pointer.read_array_of_uint8(s))
+      @weights = new_ptr
+      self[:weights] = new_ptr
+      self.num_weights += 1
+      self
+    end
+
   end
 
   PrimitiveType = bitmask(:primitive_type, [

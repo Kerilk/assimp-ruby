@@ -21,6 +21,16 @@ module Assimp
 
     struct_array_attr_accessor [:meshes, :uint]
 
+    def initialize(ptr = nil)
+      if ptr
+        super
+      else
+        ptr = FFI::MemoryPointer::new(self.class.size, 1, true)
+        super(ptr)
+        transformation.identity!
+      end
+    end
+
     def parent
       ptr = self[:parent]
       return nil if ptr.null?

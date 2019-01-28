@@ -210,7 +210,7 @@ module Assimp
   attach_function :aiTransposeMatrix4, [Matrix4x4.by_ref], :void
   attach_function :aiTransposeMatrix3, [Matrix3x3.by_ref], :void
   attach_function :aiTransformVecByMatrix3, [Vector3D.by_ref, Matrix3x3.by_ref], :void
-  attach_function :transform_vec_by_matrix4, :aiTransformVecByMatrix4, [Vector3D.by_ref, Matrix4x4.by_ref], :void
+  attach_function :aiTransformVecByMatrix4, [Vector3D.by_ref, Matrix4x4.by_ref], :void
   attach_function :aiMultiplyMatrix4, [Matrix4x4.by_ref, Matrix4x4.by_ref], :void
   attach_function :aiMultiplyMatrix3, [Matrix3x3.by_ref, Matrix3x3.by_ref], :void
   attach_function :aiIdentityMatrix4, [Matrix4x4.by_ref], :void

@@ -37,6 +37,14 @@ module Assimp
       Node::new(ptr)
     end
 
+    def ancestors
+      return parent ?  [parent] + parent.ancestors : []
+    end
+
+    def world_transformation
+      ancestors.reverse.collect(&:transformation).reduce(:*) * transformation
+    end
+
     def parent=(other)
       if other.kind_of? FFI::Pointer
         self[:parent] = other
@@ -57,6 +65,18 @@ module Assimp
         return self
       else
         to_enum(:each_node)
+      end
+    end
+
+    def each_node_with_depth(depth=nil, &block)
+      depth = (depth ? depth + 1 : 0)
+      if block then
+        block.call self, depth
+        children.each { |c|
+          c.each_node_with_depth(depth, &block)
+        }
+      else
+        to_enum(:each_node_with_depth)
       end
     end
 

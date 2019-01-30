@@ -42,7 +42,11 @@ module Assimp
     end
 
     def world_transformation
-      ancestors.reverse.collect(&:transformation).reduce(:*) * transformation
+      if parent
+        ancestors.reverse.collect(&:transformation).reduce(:*) * transformation
+      else
+        transformation
+      end
     end
 
     def parent=(other)

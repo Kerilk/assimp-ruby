@@ -70,7 +70,7 @@ EOF
         Assimp::aiTransformVecByMatrix3(v, self)
         v
       else
-        "Unsupported operand: #{other.inspect}!"
+        raise "Unsupported operand: #{other.inspect}!"
       end
     end
 

@@ -38,7 +38,7 @@ module Assimp
         r = self * q2 * conjugate
         v.set(r.x, r.y, r.z)
       else
-        "Unsupported operand: #{other.inspect}!"
+        raise "Unsupported operand: #{other.inspect}!"
       end
     end
 

@@ -1,6 +1,6 @@
 [ '../lib', 'lib' ].each { |d| $:.unshift(d) if File::directory?(d) }
 require 'minitest/autorun'
-require 'assimp'
+require 'assimp-ffi'
 
 class AssimpTest < Minitest::Test
 

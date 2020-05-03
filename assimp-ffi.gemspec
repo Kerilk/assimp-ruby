@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name = 'assimp-ffi'
-  s.version = "0.1.6"
+  s.version = "0.1.7"
   s.author = "Brice Videau"
-  s.email = "brice.videau@imag.fr"
+  s.email = "brice.videau@gmail.com"
   s.homepage = "https://github.com/Kerilk/assimp-ruby"
   s.summary = "Open Asset Import Library bindings"
   s.description = "FFI bindings of Assimp (Open Asset Import Library bindings) for version 4.1.0 onward"

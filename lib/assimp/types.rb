@@ -35,28 +35,52 @@ module Assimp
     end
   end
 
-  class String #< FFI::Struct
-    extend StructAccessors
-    MAXLEN = 1024
-    layout :length, :size_t,
-           :data, [:char, MAXLEN]
-    struct_attr_reader :length
+  if version >= Version::new(5,0,0)
+    class String #< FFI::Struct
+      extend StructAccessors
+      MAXLEN = 1024
+      layout :length, :ai_uint32,
+             :data, [:char, MAXLEN]
+      struct_attr_reader :length
 
-    def data
-      (pointer + Assimp.find_type(:size_t).size).read_string(length)
+      def data
+        (pointer + 4).read_string(length)
+      end
+
+      def data=(str)
+        sz = str.bytesize
+        raise "String too long #{sz} > #{MAXLEN-1}!" if sz > MAXLEN-1
+        self[:length] = sz
+        (pointer + 4).write_string(str+"\x00")
+      end
+
+      def to_s
+        data
+      end
     end
+  else
+    class String #< FFI::Struct
+      extend StructAccessors
+      MAXLEN = 1024
+      layout :length, :size_t,
+             :data, [:char, MAXLEN]
+      struct_attr_reader :length
 
-    def data=(str)
-      sz = str.bytesize
-      raise "String too long #{sz} > #{MAXLEN-1}!" if sz > MAXLEN-1
-      self[:length] = sz
-      (pointer + Assimp.find_type(:size_t).size).write_string(str+"\x00")
+      def data
+        (pointer + Assimp.find_type(:size_t).size).read_string(length)
+      end
+
+      def data=(str)
+        sz = str.bytesize
+        raise "String too long #{sz} > #{MAXLEN-1}!" if sz > MAXLEN-1
+        self[:length] = sz
+        (pointer + Assimp.find_type(:size_t).size).write_string(str+"\x00")
+      end
+
+      def to_s
+        data
+      end
     end
-
-    def to_s
-      data
-    end
-
   end
 
   Return = enum( :return, [ :SUCCESS, :FAILURE, -1, :OUTOFMEMORY, -3 ] )

@@ -10,6 +10,9 @@ module Assimp
     typedef :uint, :ai_uint
   end
 
+  typedef :int32, :ai_int32
+  typedef :uint32, :ai_uint32
+
   MATH_PI = 3.141592653589793238462643383279
   MATH_TWO_PI = MATH_PI * 2.0
   MATH_HALF_PI = MATH_PI * 0.5

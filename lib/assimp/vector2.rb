@@ -9,6 +9,6 @@ module Assimp
     def to_s
       "<#{x}, #{y}>"
     end
-   end
+  end
 
 end

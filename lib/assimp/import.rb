@@ -234,7 +234,7 @@ module Assimp
     s
   end
 
-  attach_function :aiReleaseImport, [Scene.by_ref], :void
+  attach_function :aiReleaseImport, [:pointer], :void
   attach_function :aiIsExtensionSupported, [:string], :bool
 
   def self.extension_supported?(extension)

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'assimp-ffi'
-  s.version = "0.1.7"
+  s.version = "0.1.8"
   s.author = "Brice Videau"
   s.email = "brice.videau@gmail.com"
   s.homepage = "https://github.com/Kerilk/assimp-ruby"

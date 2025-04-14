@@ -1,6 +1,6 @@
 module Assimp
 
-  class Node < FFI::Struct
+  class Node #< FFI::Struct
     extend StructAccessors
 
     layout :name, String,

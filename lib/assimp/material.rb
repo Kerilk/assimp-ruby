@@ -25,7 +25,7 @@ module Assimp
     :OTHER
   ])
 
-  TextureType = enum(:texture_type, [
+  types = [
     :NONE,
     :DIFFUSE,
     :SPECULAR,
@@ -38,10 +38,31 @@ module Assimp
     :DISPLACEMENT,
     :LIGHTMAP,
     :REFLECTION,
-    :UNKNOWN
-  ])
+  ]
 
-  ShadingMode = enum(:shading_mode, [
+  types += [:UNKNOWN] if version < Version.new(5,0,0)
+  if version >= Version.new(5,0,0)
+    types += [
+      :BASE_COLOR,
+      :NORMAL_CAMERA,
+      :EMISSION_COLOR,
+      :METALNESS,
+      :DIFFUSE_ROUGHNESS,
+      :AMBIENT_OCCLUSION,
+      :UNKNOWN,
+    ]
+  end
+  if version >= Version.new(5,1,0)
+    types += [
+      :SHEEN,
+      :CLEARCOAT,
+      :TRANSMISSION,
+    ]
+  end
+
+  TextureType = enum(:texture_type, types)
+
+  modes = [
     :Flat, 1,
     :Gouraud,
     :Phong,
@@ -51,8 +72,11 @@ module Assimp
     :Minnaert,
     :CookTorrance,
     :NoShading,
-    :Fresnel
-  ])
+    :Fresnel,
+  ]
+  modes += [:PBR_BRDF] if version >= Version.new(5,1,0)
+
+  ShadingMode = enum(:shading_mode, modes)
 
   TextureFlags = bitmask(:texture_flags, [
     :Invert,
@@ -90,6 +114,7 @@ module Assimp
   MATKEY_ENABLE_WIREFRAME        = "$mat.wireframe"
   MATKEY_BLEND_FUNC              = "$mat.blend"
   MATKEY_OPACITY                 = "$mat.opacity"
+  MATKEY_TRANSPARENCYFACTOR      = "$mat.transparencyfactor" if version >= Version.new(5,0,0)
   MATKEY_BUMPSCALING             = "$mat.bumpscaling"
   MATKEY_SHININESS               = "$mat.shininess"
   MATKEY_REFLECTIVITY            = "$mat.reflectivity"
@@ -102,6 +127,15 @@ module Assimp
   MATKEY_COLOR_TRANSPARENT       = "$clr.transparent"
   MATKEY_COLOR_REFLECTIVE        = "$clr.reflective"
   MATKEY_GLOBAL_BACKGROUND_IMAGE = "?bg.global"
+  if version >= Version.new(5,0,0) then
+    MATKEY_GLOBAL_SHADERLANG  = "?sh.lang"
+    MATKEY_SHADER_VERTEX      = "?sh.vs"
+    MATKEY_SHADER_FRAGMENT    = "?sh.fs"
+    MATKEY_SHADER_GEO         = "?sh.gs"
+    MATKEY_SHADER_TESSELATION = "?sh.ts"
+    MATKEY_SHADER_PRIMITIVE   = "?sh.ps"
+    MATKEY_SHADER_COMPUTE     = "?sh.cs"
+  end
   MATKEY_TEXTURE       = "$tex.file"
   MATKEY_UVWSRC        = "$tex.uvwsrc"
   MATKEY_TEXOP         = "$tex.op"
@@ -134,7 +168,16 @@ module Assimp
                          MATKEY_COLOR_REFLECTIVE ]
     STRING_PROPERTIES = [ MATKEY_NAME,
                           MATKEY_GLOBAL_BACKGROUND_IMAGE,
-                          MATKEY_TEXTURE ]
+                          MATKEY_TEXTURE ] +
+                        (Assimp.version < Version.new(5,0,0) ? [] : [
+                          MATKEY_GLOBAL_SHADERLANG,
+                          MATKEY_SHADER_VERTEX,
+                          MATKEY_SHADER_FRAGMENT,
+                          MATKEY_SHADER_GEO,
+                          MATKEY_SHADER_TESSELATION,
+                          MATKEY_SHADER_PRIMITIVE,
+                          MATKEY_SHADER_COMPUTE,
+                        ])
     BOOL_PROPERTIES = [ MATKEY_TWOSIDED, MATKEY_ENABLE_WIREFRAME ]
     INTEGER_PROPERTIES = BOOL_PROPERTIES +
                        [ MATKEY_UVWSRC,
@@ -155,7 +198,8 @@ module Assimp
                        MATKEY_REFRACTI,
                        MATKEY_SHININESS_STRENGTH,
                        MATKEY_BUMPSCALING,
-                       MATKEY_TEXMAP_AXIS ]
+                       MATKEY_TEXMAP_AXIS ] +
+                     (Assimp.version >= Version.new(5,0,0) ? [MATKEY_TRANSPARENCYFACTOR] : [])
 
     extend StructAccessors
     layout :key, String,

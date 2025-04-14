@@ -159,7 +159,11 @@ module Assimp
       args.each { |attr, klass, count|
         raise "Invalid attribute #{attr.inspect}!" unless @layout.members.include?(attr)
         define_method(attr) do
-          n = ( count ? self[count] : self[:"num_#{attr}"] )
+          if count.kind_of?(Integer)
+            n = count
+          else
+            n = ( count ? self[count] : self[:"num_#{attr}"] )
+          end
           p = self[attr]
           if n == 0 || p.null?
             []
@@ -177,12 +181,16 @@ module Assimp
         @__has_ref = true
         define_method(:"#{attr}=") do |values|
           values = [] if values.nil?
-          if count
-            self[count] = values.length
-          else
-            self[:"num_#{attr}"] = values.length
+          raise "'values' exceed max length (#{count})" if count.kind_of?(Integer) && count < values.length
+          n = count.kind_of?(Integer) ? count : values.length
+          if !count.kind_of?(Integer)
+            if count
+              self[count] = n
+            else
+              self[:"num_#{attr}"] = n
+            end
           end
-          ptr = (values.length == 0 ? nil : FFI::MemoryPointer::new(:pointer, values.length))
+          ptr = (values.length == 0 ? nil : FFI::MemoryPointer::new(:pointer, n))
           ptr.write_array_of_pointer(values.collect(&:pointer)) if ptr
           self.instance_variable_set(:"@#{attr}", [ptr, values.dup])
           self[attr] = ptr

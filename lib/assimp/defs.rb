@@ -1,6 +1,6 @@
 module Assimp
 
-  if ENV["ASSIMP_DOUBLE_PRECISION"]
+  if ENV["ASSIMP_DOUBLE_PRECISION"] || compile_flags.include?(:DOUBLE_SUPPORT)
     typedef :double, :ai_real
     typedef :long_long, :ai_int
     typedef :ulong_long, :ai_uint

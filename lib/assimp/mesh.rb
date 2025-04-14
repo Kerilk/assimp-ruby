@@ -22,19 +22,34 @@ module Assimp
     extend StructAccessors
 
     layout :vertex_id, :uint,
-           :weight, :float
+           :weight, Assimp.version >= Version::new(5,1,0) ? :ai_real : :float
 
     struct_attr_accessor :vertex_id,
                          :weight
   end
 
+  class Node < FFI::Struct
+  end
+
   class Bone < FFI::Struct
     extend StructAccessors
 
-    layout :name, String,
-           :num_weights, :uint,
-           :weights, :pointer, #VertexWeight[num_weights]
-           :offset_matrix, Matrix4x4
+    if Assimp.version >= Version::new(5,1,0)
+      layout :name, String,
+             :num_weights, :uint,
+             :armature, Node.ptr,
+             :node, Node.ptr,
+             :weights, :pointer, #VertexWeight[num_weights]
+             :offset_matrix, Matrix4x4
+
+      struct_attr_accessor :armature,
+                           :node
+    else
+      layout :name, String,
+             :num_weights, :uint,
+             :weights, :pointer, #VertexWeight[num_weights]
+             :offset_matrix, Matrix4x4
+    end
 
     struct_attr_accessor :name,
                          :num_weights,
@@ -73,12 +88,15 @@ module Assimp
 
   end
 
-  PrimitiveType = bitmask(:primitive_type, [
+  types = [
     :POINT,
     :LINE,
     :TRIANGLE,
-    :POLYGON
-  ])
+    :POLYGON,
+  ]
+  types += [:NGONEncodingFlag] if version >= Version::new(5,1,0)
+
+  PrimitiveType = bitmask(:primitive_type, types)
 
   class AnimMesh < FFI::Struct
     extend StructAccessors
@@ -173,24 +191,30 @@ module Assimp
   class Mesh < FFI::Struct
     extend StructAccessors
 
-    layout :primitive_types, PrimitiveType,
-           :num_vertices, :uint,
-           :num_faces, :uint,
-           :vertices, :pointer, #Vector3D[num_vertices]
-           :normals, :pointer, #Vector3D[num_vertices]
-           :tangents, :pointer, #Vector3D[num_vertices]
-           :bitangents, :pointer, #Vector3D[num_vertices]
-           :colors, [:pointer, MAX_NUMBER_OF_COLOR_SETS], #Color4D[num_vertices]
-           :texture_coords, [:pointer, MAX_NUMBER_OF_TEXTURECOORDS], #Vector3D[num_vertices]
-           :num_uv_components, [:uint, MAX_NUMBER_OF_TEXTURECOORDS],
-           :faces, :pointer, #Face[num_faces]
-           :num_bones, :uint,
-           :bones, :pointer, #Bone*[num_bones]
-           :material_index, :uint,
-           :name, String,
-           :num_anim_meshes, :uint,
-           :anim_meshes, :pointer, #AnimMesh*[num_anim_meshes]
-           :method, MorphingMethod
+    members = [
+      :primitive_types, PrimitiveType,
+      :num_vertices, :uint,
+      :num_faces, :uint,
+      :vertices, :pointer, #Vector3D[num_vertices]
+      :normals, :pointer, #Vector3D[num_vertices]
+      :tangents, :pointer, #Vector3D[num_vertices]
+      :bitangents, :pointer, #Vector3D[num_vertices]
+      :colors, [:pointer, MAX_NUMBER_OF_COLOR_SETS], #Color4D[num_vertices]
+      :texture_coords, [:pointer, MAX_NUMBER_OF_TEXTURECOORDS], #Vector3D[num_vertices]
+      :num_uv_components, [:uint, MAX_NUMBER_OF_TEXTURECOORDS],
+      :faces, :pointer, #Face[num_faces]
+      :num_bones, :uint,
+      :bones, :pointer, #Bone*[num_bones]
+      :material_index, :uint,
+      :name, String,
+      :num_anim_meshes, :uint,
+      :anim_meshes, :pointer, #AnimMesh*[num_anim_meshes]
+      :method, MorphingMethod
+    ]
+    members += [:aabb, AABB] if Assimp.version >= Version::new(5,0,0)
+    members += [:texture_coords_names, :pointer] if Assimp.version >= Version::new(5,1,0)
+
+    layout *members
 
     struct_attr_accessor :name,
                          :primitive_types,
@@ -210,6 +234,13 @@ module Assimp
 
     struct_ref_array_attr_accessor [:bones, Bone],
                                    [:anim_meshes, AnimMesh]
+
+    if Assimp.version >= Version::new(5,0,0)
+      struct_attr_accessor :aabb
+    end
+    if Assimp.version >= Version::new(5,1,0)
+      struct_ref_array_attr_accessor [:texture_coords_names, String, MAX_NUMBER_OF_TEXTURECOORDS]
+    end
 
     def colors
       cs = self[:colors].to_a

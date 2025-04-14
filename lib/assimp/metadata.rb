@@ -1,6 +1,6 @@
 module Assimp
 
-  MetadataType = enum(:metadata_type, [
+  types = [
     :BOOL,
     :INT32,
     :UINT64,
@@ -8,7 +8,17 @@ module Assimp
     :DOUBLE,
     :AISTRING,
     :AIVECTOR3D
-  ])
+  ]
+  if version >= Version::new(5,1,0)
+    types += [
+      :AIMETADATA
+    ]
+  end
+
+  MetadataType = enum(:metadata_type, types)
+
+  class Metadata < FFI::Struct
+  end
 
   class MetadataEntry < FFI::Struct
     extend StructAccessors
@@ -34,13 +44,15 @@ module Assimp
         self[:data].get_string(4, s)
       when :AIVECTOR3D
         Vector3D::new(d)
+      when :AIMETADATA
+        Metadata::new(d)
       else
         raise "Unknown MetadataType : #{type}!"
       end
     end
   end
 
-  class Metadata < FFI::Struct
+  class Metadata
     extend StructAccessors
     layout :num_properties, :uint,
            :keys, :pointer, #String[num_properties]

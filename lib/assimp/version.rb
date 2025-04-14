@@ -35,13 +35,20 @@ module Assimp
     Assimp::aiGetLegalString
   end
 
-  CFlags = bitmask(:cflags, [
+  if version >= Version::new(5,1,0)
+    attach_function :aiGetVersionPatch, [], :uint
+  end
+
+  flags = [
     :SHARED,
     :STLPORT,
     :DEBUG,
     :NOBOOST,
-    :SINGLETHREADED
-  ])
+    :SINGLETHREADED,
+  ]
+  flags += [:DOUBLE_SUPPORT] if version >= Version::new(5,1,0)
+
+  CFlags = bitmask(:cflags, flags)
 
   attach_function :aiGetCompileFlags, [], :cflags
 

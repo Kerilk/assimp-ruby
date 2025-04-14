@@ -269,4 +269,73 @@ module Assimp
     count.times.collect { |i| aiGetImportFormatDescription(i) }
   end
 
+  if version >= Version::new(5,1,0) then
+    attach_function :aiVector2AreEqual, [Vector2D.by_ref, Vector2D.by_ref], :int
+    attach_function :aiVector2AreEqualEpsilon, [Vector2D.by_ref, Vector2D.by_ref, :float], :int
+    attach_function :aiVector2Add, [Vector2D.by_ref, Vector2D.by_ref], :void
+    attach_function :aiVector2Subtract, [Vector2D.by_ref, Vector2D.by_ref], :void
+    attach_function :aiVector2Scale, [Vector2D.by_ref, :float], :void
+    attach_function :aiVector2SymMul, [Vector2D.by_ref, Vector2D.by_ref], :void
+    attach_function :aiVector2DivideByScalar, [Vector2D.by_ref, :float], :void
+    attach_function :aiVector2DivideByVector, [Vector2D.by_ref, Vector2D.by_ref], :void
+    attach_function :aiVector2Length, [Vector2D.by_ref], :float
+    attach_function :aiVector2SquareLength, [Vector2D.by_ref], :float
+    attach_function :aiVector2Negate, [Vector2D.by_ref], :void
+    attach_function :aiVector2DotProduct, [Vector2D.by_ref, Vector2D.by_ref], :float
+    attach_function :aiVector2Normalize, [Vector2D.by_ref], :void
+    attach_function :aiVector3AreEqual, [Vector3D.by_ref, Vector3D.by_ref], :int
+    attach_function :aiVector3AreEqualEpsilon, [Vector3D.by_ref, Vector3D.by_ref, :float], :int
+    attach_function :aiVector3LessThan, [Vector3D.by_ref, Vector3D.by_ref], :int
+    attach_function :aiVector3Add, [Vector3D.by_ref, Vector3D.by_ref], :void
+    attach_function :aiVector3Subtract, [Vector3D.by_ref, Vector3D.by_ref], :void
+    attach_function :aiVector3Scale, [Vector3D.by_ref, :float], :void
+    attach_function :aiVector3SymMul, [Vector3D.by_ref, Vector3D.by_ref], :void
+    attach_function :aiVector3DivideByScalar, [Vector3D.by_ref, :float], :void
+    attach_function :aiVector3DivideByVector, [Vector3D.by_ref, Vector3D.by_ref], :void
+    attach_function :aiVector3Length, [Vector3D.by_ref], :float
+    attach_function :aiVector3SquareLength, [Vector3D.by_ref], :float
+    attach_function :aiVector3Negate, [Vector3D.by_ref], :void
+    attach_function :aiVector3DotProduct, [Vector3D.by_ref, Vector3D.by_ref], :float
+    attach_function :aiVector3Normalize, [Vector3D.by_ref], :void
+    attach_function :aiVector3NormalizeSafe, [Vector3D.by_ref], :void
+    attach_function :aiVector3RotateByQuaternion, [Vector3D.by_ref, Quaternion.by_ref], :void
+    attach_function :aiMatrix3FromMatrix4, [Matrix3x3.by_ref, Matrix4x4.by_ref], :void
+    attach_function :aiMatrix3FromQuaternion, [Matrix3x3.by_ref, Quaternion.by_ref], :void
+    attach_function :aiMatrix3AreEqual, [Matrix3x3.by_ref, Matrix3x3.by_ref], :int
+    attach_function :aiMatrix3AreEqualEpsilon, [Matrix3x3.by_ref, Matrix3x3.by_ref, :float], :int
+    attach_function :aiMatrix3Inverse, [Matrix3x3.by_ref], :void
+    attach_function :aiMatrix3Determinant, [Matrix3x3.by_ref], :float
+    attach_function :aiMatrix3RotationZ, [Matrix3x3.by_ref, :float], :void
+    attach_function :aiMatrix3FromRotationAroundAxis, [Matrix3x3.by_ref, Vector3D.by_ref, :float], :void
+    attach_function :aiMatrix3Translation, [Matrix3x3.by_ref, Vector2D.by_ref], :void
+    attach_function :aiMatrix3FromTo, [Matrix3x3.by_ref, Vector3D.by_ref, Vector3D.by_ref], :void
+    attach_function :aiMatrix4FromMatrix3, [Matrix4x4.by_ref, Matrix3x3.by_ref], :void
+    attach_function :aiMatrix4FromScalingQuaternionPosition, [Matrix4x4.by_ref, Matrix3x3.by_ref, Quaternion.by_ref, Vector3D.by_ref], :void
+    attach_function :aiMatrix4Add, [Matrix4x4.by_ref, Matrix4x4.by_ref], :void
+    attach_function :aiMatrix4AreEqual, [Matrix4x4.by_ref, Matrix4x4.by_ref], :int
+    attach_function :aiMatrix4AreEqualEpsilon, [Matrix4x4.by_ref, Matrix4x4.by_ref, :float], :int
+    attach_function :aiMatrix4Inverse, [Matrix4x4.by_ref], :void
+    attach_function :aiMatrix4Determinant, [Matrix4x4.by_ref], :float
+    attach_function :aiMatrix4IsIdentity, [Matrix4x4.by_ref], :int
+    attach_function :aiMatrix4DecomposeIntoScalingEulerAnglesPosition, [Matrix4x4.by_ref, Vector3D.by_ref, Vector3D.by_ref, Vector3D.by_ref], :void
+    attach_function :aiMatrix4DecomposeIntoScalingAxisAnglePosition, [Matrix4x4.by_ref, Vector3D.by_ref, Vector3D.by_ref, :ai_real, Vector3D.by_ref], :void
+    attach_function :aiMatrix4DecomposeNoScaling, [Matrix4x4.by_ref, Quaternion.by_ref, Vector3D.by_ref], :void
+    attach_function :aiMatrix4FromEulerAngles, [Matrix4x4.by_ref, :float, :float, :float], :void
+    attach_function :aiMatrix4RotationX, [Matrix4x4.by_ref, :float], :void
+    attach_function :aiMatrix4RotationY, [Matrix4x4.by_ref, :float], :void
+    attach_function :aiMatrix4RotationZ, [Matrix4x4.by_ref, :float], :void
+    attach_function :aiMatrix4FromRotationAroundAxis, [Matrix4x4.by_ref, Vector3D.by_ref, :float], :void
+    attach_function :aiMatrix4Translation, [Matrix4x4.by_ref, Vector3D.by_ref], :void
+    attach_function :aiMatrix4Scaling, [Matrix4x4.by_ref, Vector3D.by_ref], :void
+    attach_function :aiMatrix4FromTo, [Matrix4x4.by_ref, Vector3D.by_ref, Vector3D.by_ref], :void
+    attach_function :aiQuaternionFromEulerAngles, [Quaternion.by_ref, :float, :float, :float], :void
+    attach_function :aiQuaternionFromAxisAngle, [Quaternion.by_ref, Vector3D.by_ref, :float], :void
+    attach_function :aiQuaternionFromNormalizedQuaternion, [Quaternion.by_ref, Vector3D.by_ref], :void
+    attach_function :aiQuaternionAreEqual, [Quaternion.by_ref, Quaternion.by_ref], :int
+    attach_function :aiQuaternionAreEqualEpsilon, [Quaternion.by_ref, Quaternion.by_ref, :float], :int
+    attach_function :aiQuaternionNormalize, [Quaternion.by_ref], :void
+    attach_function :aiQuaternionConjugate, [Quaternion.by_ref], :void
+    attach_function :aiQuaternionMultiply, [Quaternion.by_ref, Quaternion.by_ref], :void
+    attach_function :aiQuaternionInterpolate, [Quaternion.by_ref, Quaternion.by_ref, Quaternion.by_ref, :float], :void
+  end
 end

@@ -83,9 +83,9 @@ module Assimp
     end
   end
 
-  Return = enum( :return, [ :SUCCESS, :FAILURE, -1, :OUTOFMEMORY, -3 ] )
+  Return = enum(:return, [:SUCCESS, :FAILURE, -1, :OUTOFMEMORY, -3])
 
-  Origin = enum( :origin, [ :SET, :CUR, :END ] )
+  Origin = enum(:origin, [:SET, :CUR, :END])
 
   DefaultLogStream = bitmask( :default_log_stream, [
     :FILE,

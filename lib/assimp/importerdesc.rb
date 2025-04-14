@@ -36,7 +36,13 @@ module Assimp
 
   end
 
-  #Following function is not found in the ubuntu distribution
-  #attach_function :aiGetImporterDesc, [:string], ImporterDesc.ptr
+  #Following function is not found in the ubuntu distribution before 5.1?
+  if version >= Version::new(5,1,0) then
+    attach_function :aiGetImporterDesc, [:string], ImporterDesc.ptr
+
+    def self.get_importer_desc(extension)
+      self.aiGetImporterDesc(extension)
+    end
+  end
 
 end

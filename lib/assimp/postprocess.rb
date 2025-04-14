@@ -1,6 +1,6 @@
 module Assimp
 
-  PostProcessSteps = bitmask(:post_process_steps, [
+  steps = [
     :CalcTangentSpace,
     :JoinIdenticalVertices,
     :MakeLeftHanded,
@@ -15,6 +15,9 @@ module Assimp
     :ImproveCacheLocality,
     :RemoveRedundantMaterials,
     :FixInfacingNormals,
+  ]
+  steps += [:PopulateArmatureData] if version >= Version::new(5,1,0)
+  steps += [
     :SortByPType, 15,
     :FindDegenerates,
     :FindInvalidData,
@@ -27,8 +30,10 @@ module Assimp
     :FlipWindingOrder,
     :SplitByBoneCount,
     :Debone,
-    :GlobalScale
-  ])
+    :GlobalScale,
+  ]
+
+  PostProcessSteps = bitmask(:post_process_steps, steps)
 
   ProcessPreset_ConvertToLeftHanded = Assimp::PostProcessSteps[
     :MakeLeftHanded,

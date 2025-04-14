@@ -12,6 +12,9 @@ class AssimpTest < Minitest::Test
       $stderr.print user
       $stderr.print mess
     }
+    if Assimp.version >= Assimp::Version::new(5,1,0) then
+      puts Assimp.get_importer_desc("dae")
+    end
     Assimp::LogStream::verbose(Assimp::TRUE)
     scene = Assimp::import_file("duck.dae")
     log.detach
@@ -36,7 +39,7 @@ class AssimpTest < Minitest::Test
       p n.meshes
       p n.meta_data
       if n.meta_data
-      p n.meta_data.num_properties
+        p n.meta_data.num_properties
       end
     }
     scene.meshes.each { |m|
@@ -47,6 +50,8 @@ class AssimpTest < Minitest::Test
       p m.tangents
       p m.bitangents
       puts m.name
+      puts m.aabb if Assimp::version >= Assimp::Version.new(5,0,0)
+      p m.texture_coords_names if Assimp::version >= Assimp::Version.new(5,1,0)
     }
     p scene.num_textures
     p scene.textures
@@ -85,6 +90,7 @@ class AssimpTest < Minitest::Test
     puts Assimp::version
     puts Assimp::aiGetVersionMinor
     puts Assimp::compile_flags
+    puts Assimp::compile_flags.include?(:SHARED)
     puts scene.export_to_blob("collada").size
     log.detach
     scene = nil
